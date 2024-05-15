@@ -1,0 +1,6 @@
+file_client: local
+root_dir: .salt
+
+file_roots:
+  base:
+    - .

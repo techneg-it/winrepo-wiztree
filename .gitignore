@@ -1,0 +1,6 @@
+# Ignore these folders for a local Salt environment
+# `minion` config file is tracked by Git
+.salt/*
+!.salt/etc
+.salt/etc/*
+!.salt/etc/minion
