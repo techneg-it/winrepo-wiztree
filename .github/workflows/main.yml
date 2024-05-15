@@ -1,0 +1,105 @@
+name: Test
+
+on:
+  - pull_request
+  - push
+  - workflow_call
+  - workflow_dispatch
+
+jobs:
+  pre-commit:
+    name: Run `pre-commit`
+    runs-on: ubuntu-latest
+    env:
+      # renovate: datasource=github-releases depName=actions/python-versions extractVersion=^(?<version>\S+)-\d+$
+      PYTHON_VERSION: 3.12.3
+    steps:
+      - uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+  gsv:
+    name: Get Salt versions
+    runs-on: ubuntu-latest
+    outputs:
+      salt-versions-els: ${{ steps.get-salt-versions.outputs.salt-versions-els }}
+      salt-versions: ${{ steps.get-salt-versions.outputs.salt-versions }}
+      salt-latest: ${{ steps.get-salt-versions.outputs.salt-latest }}
+    steps:
+      - id: get-salt-versions
+        uses: dafyddj/get-salt-versions@25577dd92ff3478b3041df23c3cdecceb4fc6d8d # v3.2.0
+  refresh_db:
+    name: Test `pkg.refresh_db`
+    needs: gsv
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        salt-version:
+          - ${{ fromJSON(needs.gsv.outputs.salt-versions-els) }}
+          - ${{ fromJSON(needs.gsv.outputs.salt-versions) }}
+    steps:
+      - uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+        with:
+          path: win/repo-ng
+      - name: Setup Salt
+        uses: dafyddj/setup-salt-win@1fe09b1c0cdb721a43f9e5faa9bd079af8701803 # v2.2.0
+        with:
+          salt-version: ${{ matrix.salt-version }}
+          custom-config: |
+            osenv:
+              driver: env
+            file_roots:
+              base:
+                - sdb://osenv/GITHUB_WORKSPACE
+      - name: Run `salt-call pkg.refresh_db`
+        run: |
+          $pkgs = (salt-call --out=json pkg.refresh_db | ConvertFrom-Json).local
+          if ($LASTEXITCODE) {
+              Write-Host ("::error title=salt-call::salt-call returned exit code: $LASTEXITCODE")
+              exit 1
+          }
+          $pkgs
+  test:
+    name: Run URL tests
+    needs:
+      - gsv
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      - id: changed-files
+        name: Get changed files
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        with:
+          list-files: json
+          filters: |
+            sls:
+              - added|modified:
+                - '**/*.sls'
+      - name: Setup Salt
+        if: steps.changed-files.outputs.sls == 'true'
+        uses: dafyddj/setup-salt-win@1fe09b1c0cdb721a43f9e5faa9bd079af8701803 # v2.2.0
+        with:
+          salt-version: ${{ needs.gsv.outputs.salt-latest }}
+      - name: Setup `pip` dependencies
+        if: steps.changed-files.outputs.sls == 'true'
+        run: |
+          salt-pip install -r .cicd/requirements.txt
+          if ($LASTEXITCODE) {
+              Write-Host ("::error title=salt-pip::salt-pip returned exit code: $LASTEXITCODE")
+              exit 1
+          }
+      - name: Run URL test
+        if: steps.changed-files.outputs.sls == 'true'
+        run: |
+          & "C:\Program Files\Salt Project\Salt\Scripts\python.exe" .\.cicd\tests.py ${{ join(fromJSON(steps.changed-files.outputs.sls_files), ' ') }}
+  results:
+    name: Collect results
+    needs:
+      - pre-commit
+      - refresh_db
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Tests succeeded!"
