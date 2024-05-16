@@ -1,6 +1,5 @@
 {% load_yaml as versions -%}
 - '4.19'
-- '4.18'
 - '4.17'
 - '4.16'
 - '4.15'
@@ -63,6 +62,7 @@
 {% endload -%}
 
 {% load_yaml as uninstall_only -%}
+- '4.18'
 - '4.14'
 - '3.26'
 {% endload -%}
