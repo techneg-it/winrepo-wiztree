@@ -24,6 +24,14 @@
       "datasourceTemplate": "github-tags",
       "autoReplaceStringTemplate": "_commit: {{#if currentDigest}}{{{currentDigest}}}{{else}}{{{currentValue}}}{{/if}} # __copier_update_available {{{newValue}}}\n_src_path: gh:{{{depName}}}\n",
     },
+    {
+      "customType": "regex",
+      "fileMatch": ["\\.sls$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+- [\"']?(?<currentValue>.+?)[\"']?\\s",
+      ],
+      "autoReplaceStringTemplate": "# renovate: datasource={{{datasource}}} depName={{{depName}}}{{#unless (equals depName packageName)}} packageName={{{packageName}}}{{/unless}}\n- '{{{newValue}}}'\n- '{{{currentValue}}}'\n",
+    },
   ],
   "git-submodules": {
     "enabled": true
@@ -34,9 +42,19 @@
       "automerge": true,
     },
     {
-      "matchManagers": ["custom.regex"],
+      "matchFiles": [".copier-answers.yml"],
       "automerge": true,
       "commitMessageSuffix": "available",
+    },
+    {
+      "matchFileNames": ["**/*.sls"],
+      "commitMessageAction": "add",
+      "commitMessageExtra": "{{prettyNewVersion}}",
+      "commitMessageTopic": "`{{depName}}` version",
+      "extends": [
+        ":semanticCommitScopeDisabled",
+        ":semanticCommitType(update)",
+      ],
     },
   ],
   "platformAutomerge": false,
