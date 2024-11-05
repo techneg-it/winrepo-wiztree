@@ -1,29 +1,18 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "enabledManagers": [
+    "copier",
     "custom.regex",
     "git-submodules",
   ],
   "extends": [
     "config:recommended",
   ],
-  // `copier` template updates
-  // There are two conditions that we need to account for
-  //   * a "clean" `.copier-answers.yml` file
-  //   * update needed but not yet applied (and further updates could appear in this condition)
-  // `renovate` needs to be able to match both conditions for PRs to work properly
-  // We make a hacky use of the otherwise unused field `currentDigest` to hold the current copier template version
+  "dependencyDashboardTitle": "Renovate Dashboard",
+  "git-submodules": {
+    "enabled": true
+  },
   "customManagers": [
-    {
-      "customType": "regex",
-      "fileMatch": ["^.copier-answers.yml$"],
-      "matchStrings": [
-        "_commit: (?<currentValue>\\S+)\\n_src_path: gh:(?<depName>\\S+)\\n",
-        "_commit: (?<currentDigest>\\S+) # __copier_update_available (?<currentValue>\\S+)\\n_src_path: gh:(?<depName>\\S+)\\n",
-      ],
-      "datasourceTemplate": "github-tags",
-      "autoReplaceStringTemplate": "_commit: {{#if currentDigest}}{{{currentDigest}}}{{else}}{{{currentValue}}}{{/if}} # __copier_update_available {{{newValue}}}\n_src_path: gh:{{{depName}}}\n",
-    },
     {
       "customType": "regex",
       "fileMatch": ["\\.sls$"],
@@ -31,23 +20,13 @@
         "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+- [\"']?(?<currentValue>.+?)[\"']?\\s",
       ],
       "autoReplaceStringTemplate": "# renovate: datasource={{{datasource}}} depName={{{depName}}}{{#unless (equals depName packageName)}} packageName={{{packageName}}}{{/unless}}\n- '{{{newValue}}}'\n- '{{{currentValue}}}'\n",
+      "versioningTemplate": "loose",
     },
   ],
-  "git-submodules": {
-    "enabled": true
-  },
   "packageRules": [
     {
-      "matchManagers": ["git-submodules"],
-      "automerge": true,
-    },
-    {
-      "matchFiles": [".copier-answers.yml"],
-      "automerge": true,
-      "commitMessageSuffix": "available",
-    },
-    {
       "matchFileNames": ["**/*.sls"],
+      "automerge": true,
       "commitMessageAction": "add",
       "commitMessageExtra": "{{prettyNewVersion}}",
       "commitMessageTopic": "`{{depName}}` version",
@@ -56,6 +35,9 @@
         ":semanticCommitType(update)",
       ],
     },
+    {
+      "matchManagers": ["git-submodules"],
+      "automerge": true,
+    },
   ],
-  "platformAutomerge": false,
 }
