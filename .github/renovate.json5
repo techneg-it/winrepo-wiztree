@@ -8,6 +8,7 @@
   "extends": [
     "config:recommended",
   ],
+  "automergeStrategy": "merge-commit",
   "dependencyDashboardTitle": "Renovate Dashboard",
   "git-submodules": {
     "enabled": true
@@ -34,6 +35,10 @@
         ":semanticCommitScopeDisabled",
         ":semanticCommitType(update)",
       ],
+    },
+    {
+      "matchFileNames": ["template/**"],
+      "semanticCommitType": "fix",
     },
     {
       "matchManagers": ["git-submodules"],
