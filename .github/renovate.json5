@@ -1,48 +1,54 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "enabledManagers": [
-    "copier",
-    "custom.regex",
-    "git-submodules",
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  enabledManagers: [
+    'copier',
+    'custom.regex',
+    'git-submodules',
   ],
-  "extends": [
-    "config:recommended",
+  extends: [
+    'config:recommended',
   ],
-  "automergeStrategy": "merge-commit",
-  "dependencyDashboardTitle": "Renovate Dashboard",
-  "git-submodules": {
-    "enabled": true
+  automergeStrategy: 'merge-commit',
+  dependencyDashboardTitle: 'Renovate Dashboard',
+  'git-submodules': {
+    enabled: true
   },
-  "customManagers": [
+  customManagers: [
     {
-      "customType": "regex",
-      "fileMatch": ["\\.sls$"],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+- [\"']?(?<currentValue>.+?)[\"']?\\s",
+      customType: 'regex',
+      fileMatch: ['\\.sls$'],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+- ["\']?(?<currentValue>.+?)["\']?\\s',
       ],
-      "autoReplaceStringTemplate": "# renovate: datasource={{{datasource}}} depName={{{depName}}}{{#unless (equals depName packageName)}} packageName={{{packageName}}}{{/unless}}\n- '{{{newValue}}}'\n- '{{{currentValue}}}'\n",
-      "versioningTemplate": "loose",
+      autoReplaceStringTemplate: '# renovate: datasource={{{datasource}}} depName={{{depName}}}{{#unless (equals depName packageName)}} packageName={{{packageName}}}{{/unless}}\n- \'{{{newValue}}}\'\n- \'{{{currentValue}}}\'\n',
+      versioningTemplate: 'loose',
     },
   ],
-  "packageRules": [
+  packageRules: [
     {
-      "matchFileNames": ["**/*.sls"],
-      "automerge": true,
-      "commitMessageAction": "add",
-      "commitMessageExtra": "{{prettyNewVersion}}",
-      "commitMessageTopic": "`{{depName}}` version",
-      "extends": [
-        ":semanticCommitScopeDisabled",
-        ":semanticCommitType(update)",
+      matchFileNames: [
+        '**/*.sls',
+      ],
+      automerge: true,
+      commitMessageAction: 'add',
+      commitMessageExtra: '{{prettyNewVersion}}',
+      commitMessageTopic: '`{{depName}}` version',
+      extends: [
+        ':semanticCommitScopeDisabled',
+        ':semanticCommitType(update)',
       ],
     },
     {
-      "matchFileNames": ["template/**"],
-      "semanticCommitType": "fix",
+      matchFileNames: [
+        'template/**'
+      ],
+      semanticCommitType: 'fix',
     },
     {
-      "matchManagers": ["git-submodules"],
-      "automerge": true,
+      automerge: true,
+      matchManagers: [
+        'git-submodules'
+      ],
     },
   ],
 }
