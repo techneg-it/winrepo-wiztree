@@ -10,7 +10,7 @@ repos:
         args: [--assume-in-merge]
       - id: check-yaml
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.31.3
+    rev: 0.32.1
     hooks:
       - id: check-github-workflows
         name: Check GitHub workflows with check-jsonschema
@@ -19,7 +19,7 @@ repos:
         name: Check Renovate config with check-jsonschema
         additional_dependencies:
           # renovate: datasource=pypi
-          - json5==0.10.0
+          - json5==0.12.0
         args: ["--verbose"]
   - repo: https://github.com/biomejs/pre-commit
     rev: v1.9.4
