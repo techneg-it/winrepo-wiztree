@@ -16,7 +16,9 @@
   customManagers: [
     {
       customType: 'regex',
-      fileMatch: ['\\.sls$'],
+      managerFilePatterns: [
+        '**/*.sls',
+      ],
       matchStrings: [
         '# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+- ["\']?(?<currentValue>.+?)["\']?\\s',
       ],
