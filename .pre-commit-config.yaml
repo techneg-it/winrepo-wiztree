@@ -10,7 +10,7 @@ repos:
         args: [--assume-in-merge]
       - id: check-yaml
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.33.1
+    rev: 0.33.2
     hooks:
       - id: check-github-workflows
         name: Check GitHub workflows with check-jsonschema
@@ -22,11 +22,10 @@ repos:
           - json5==0.12.0
         args: ["--verbose"]
   - repo: https://github.com/biomejs/pre-commit
-    rev: v1.9.4
+    rev: v2.1.1
     hooks:
       - id: biome-check
         name: Check JavaScript with biome
-        additional_dependencies: ["@biomejs/biome@1.9.4"]
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:
