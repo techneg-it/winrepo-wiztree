@@ -3,16 +3,11 @@
   enabledManagers: [
     'copier',
     'custom.regex',
-    'git-submodules',
   ],
   extends: [
-    'config:recommended',
+    'github>techneg-it/.github',
+    'github>techneg-it/.github:copier',
   ],
-  automergeStrategy: 'merge-commit',
-  dependencyDashboardTitle: 'Renovate Dashboard',
-  'git-submodules': {
-    enabled: true
-  },
   customManagers: [
     {
       customType: 'regex',
@@ -38,18 +33,6 @@
       extends: [
         ':semanticCommitScopeDisabled',
         ':semanticCommitType(update)',
-      ],
-    },
-    {
-      matchFileNames: [
-        'template/**'
-      ],
-      semanticCommitType: 'fix',
-    },
-    {
-      automerge: true,
-      matchManagers: [
-        'git-submodules'
       ],
     },
   ],
