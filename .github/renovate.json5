@@ -1,39 +1,6 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  enabledManagers: [
-    'copier',
-    'custom.regex',
-  ],
   extends: [
-    'github>techneg-it/.github',
-    'github>techneg-it/.github:copier',
-  ],
-  customManagers: [
-    {
-      customType: 'regex',
-      managerFilePatterns: [
-        '**/*.sls',
-      ],
-      matchStrings: [
-        '# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>\\S+?)(?: packageName=(?<packageName>\\S+?))?\\s+- ["\']?(?<currentValue>.+?)["\']?\\s',
-      ],
-      autoReplaceStringTemplate: '# renovate: datasource={{{datasource}}} depName={{{depName}}}{{#unless (equals depName packageName)}} packageName={{{packageName}}}{{/unless}}\n- \'{{{newValue}}}\'\n- \'{{{currentValue}}}\'\n',
-      versioningTemplate: 'loose',
-    },
-  ],
-  packageRules: [
-    {
-      matchFileNames: [
-        '**/*.sls',
-      ],
-      automerge: true,
-      commitMessageAction: 'add',
-      commitMessageExtra: '{{prettyNewVersion}}',
-      commitMessageTopic: '`{{depName}}` version',
-      extends: [
-        ':semanticCommitScopeDisabled',
-        ':semanticCommitType(update)',
-      ],
-    },
+    'github>saltstack/salt-winrepo-ng//.cicd/presets/default',
   ],
 }
