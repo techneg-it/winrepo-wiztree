@@ -27,14 +27,11 @@ jobs:
     needs: should-run
     if: fromJSON(needs.should-run.outputs.should-run)
     runs-on: ubuntu-24.04
-    env:
-      # renovate: datasource=custom.python-versions depName=actions/python-versions versioning=pep440
-      PYTHON_VERSION: 3.14.0
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
       - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: 3.14.2
       - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
   gsv:
     name: Get Salt versions
