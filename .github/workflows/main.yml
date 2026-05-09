@@ -40,6 +40,7 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       salt-versions-els: ${{ steps.get-salt-versions.outputs.salt-versions-els }}
+      salt-versions-rc: ${{ steps.get-salt-versions.outputs.salt-versions-rc }}
       salt-versions: ${{ steps.get-salt-versions.outputs.salt-versions }}
       salt-latest: ${{ steps.get-salt-versions.outputs.salt-latest }}
     steps:
@@ -54,6 +55,7 @@ jobs:
       matrix:
         salt-version:
           - ${{ fromJSON(needs.gsv.outputs.salt-versions-els) }}
+          - ${{ fromJSON(needs.gsv.outputs.salt-versions-rc) }}
           - ${{ fromJSON(needs.gsv.outputs.salt-versions) }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
